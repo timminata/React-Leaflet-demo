@@ -99,10 +99,17 @@ class Map extends Component {
       axios.get(transitApiUrl+'/stops?agencies='+agencyId, {headers: {Authorization: bearerToken}})
       .then((tapiResponse) =>
       {
-        console.log(tapiResponse);
+        var map = tapiResponse.data
+        .map(x => '{ "type": "Feature", "properties": { "NAME": "' + x.name +'", "URL": "http:\/\/www.mta.info\/nyct\/service\/", "LINE": "F-G" }, "geometry": { "type": "Point", "coordinates": [ ' + x.geometry.coordinates[0] + ', ' + x.geometry.coordinates[1] + ' ] } }');
+        var gog = '{\
+          "type": "FeatureCollection",\
+          "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },\
+          "features": ['+ map.join(',') +']}'
+        this.setState({
+          geojson: JSON.parse(gog),
+          geojsonLayer: null
+        });
       });
-
-      console.log(response);
     });
   }
 
@@ -122,10 +129,10 @@ class Map extends Component {
         "type": "FeatureCollection",\
         "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },\
         "features": ['+ map.join(',') +']}'
-      this.setState({
+      /*this.setState({
         geojson: JSON.parse(gog),
         geojsonLayer: null
-      });
+      });*/
       this.updateMarkers(response.data.Result.busPositions);
     })
     .catch((error) => {

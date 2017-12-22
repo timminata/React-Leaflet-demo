@@ -168,7 +168,7 @@ class Map extends Component {
 
   updateMarkers(busPositions) {
     this.state.map.eachLayer( (layer) => {
-      if (layer instanceof L.Marker) this.state.map.removeLayer(layer);
+      if (layer.id == 'foo') this.state.map.removeLayer(layer);
     });
     L.Icon.Default.imagePath = '../node_modules/leaflet/dist/images/'
     var greenBus = L.icon({
@@ -183,7 +183,7 @@ class Map extends Component {
     {
       var marker = L.marker([x.latitude, x.longitude], {icon: greenBus});
       marker.bindPopup(x.busId);
-      //marker.id = 'foo';
+      marker.id = 'foo';
       marker.addTo(this.state.map);
     });    
   }
@@ -203,12 +203,12 @@ class Map extends Component {
   }
 
   filterGeoJSONLayer() {
-    // clear the geojson layer of its data
-    this.state.geojsonLayer.clearLayers();
-    // re-add the geojson so that it filters out subway lines which do not match state.filter
-    this.state.geojsonLayer.addData(geojson);
-    // fit the map to the new geojson layer's geographic extent
-    this.zoomToFeature(this.state.geojsonLayer);
+    // // clear the geojson layer of its data
+    // this.state.geojsonLayer.clearLayers();
+    // // re-add the geojson so that it filters out subway lines which do not match state.filter
+    // this.state.geojsonLayer.addData(geojson);
+    // // fit the map to the new geojson layer's geographic extent
+    // this.zoomToFeature(this.state.geojsonLayer);
   }
 
   zoomToFeature(target) {

@@ -5,7 +5,6 @@ import 'leaflet/dist/leaflet.css';
 // using webpack json loader we can import our geojson file like this
 import geojson from 'json!./bk_subway_entrances.geojson';
 // import local components Filter and ForkMe
-import Filter from './Filter';
 import axios from 'axios';
 import qs from 'qs';
 

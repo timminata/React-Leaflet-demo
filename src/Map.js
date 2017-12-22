@@ -101,6 +101,7 @@ class Map extends Component {
         geojson: JSON.parse(gog),
         geojsonLayer: null
       });
+      this.updateMarkers(response.data.Result.busPositions);
     })
     .catch((error) => {
       console.log(error);
@@ -119,29 +120,40 @@ class Map extends Component {
     });
   }
 
-  addGeoJSONLayer(geojson) {
-    // create a native Leaflet GeoJSON SVG Layer to add as an interactive overlay to the map
-    // an options object is passed to define functions for customizing the layer
-    var greenIcon = L.icon({
-      iconUrl: '../green-bus.png',
-  
+  updateMarkers(busPositions) {
+    // this.state.map.eachLayer( (layer) => {
+    //   this.state.map.removeLayer(layer);
+    // });
+    var markerGroup = L.layerGroup().addTo(this.state.map);
+    
+    L.Icon.Default.imagePath = '../node_modules/leaflet/dist/images/'
+    var greenBus = L.icon({
+      iconUrl: '../green-bus.png',  
       iconSize:     [20, 20], // size of the icon
       // shadowSize:   [0, 0], // size of the shadow
       iconAnchor:   [10, 10], // point of the icon which will correspond to marker's location
       // shadowAnchor: [0, 0],  // the same for the shadow
       // popupAnchor:  [10, 10] // point from which the popup should open relative to the iconAnchor
     });
+    busPositions.forEach(x => 
+    {
+      var marker = L.marker([x.latitude, x.longitude], {icon: greenBus});
+      marker.bindPopup(x.busId);
+      marker.addTo(markerGroup);
+    });    
+  }
+
+  addGeoJSONLayer(geojson) {
+    // create a native Leaflet GeoJSON SVG Layer to add as an interactive overlay to the map
+    // an options object is passed to define functions for customizing the layer
+    
 
     const geojsonLayer = L.geoJson(geojson, {
       onEachFeature: this.onEachFeature,
       pointToLayer: this.pointToLayer,
       filter: this.filterFeatures
-    });
-    L.Icon.Default.imagePath = '../node_modules/leaflet/dist/images/'
+    });    
     // add our GeoJSON layer to the Leaflet map object
-    var marker = L.marker([-25.995878, 28.128539], {icon: greenIcon});
-    marker.bindPopup("<b>Hello world!</b><br>I am a popup.");
-    marker.addTo(this.state.map);
     geojsonLayer.addTo(this.state.map);
     // store the Leaflet GeoJSON layer in our component state for use later
     this.setState({ geojsonLayer });

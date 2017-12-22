@@ -81,6 +81,11 @@ class Map extends Component {
   getData() {
     // could also be an AJAX request that results in setting state with the geojson data
     // for simplicity sake we are just importing the geojson data using webpack's json loader
+    setInterval(() => 
+    {
+      console.log("wut");
+    }, 5000);
+    
     axios.get('http://www.firefishy.com/tmp/bus/getdata.php')
     .then ((response) => {
       var map = response.data.Result.busPositions
@@ -96,8 +101,7 @@ class Map extends Component {
     })
     .catch((error) => {
       console.log(error);
-    })
-    
+    })    
   }
 
   updateMap(e) {

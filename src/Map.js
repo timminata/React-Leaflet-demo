@@ -59,6 +59,9 @@ class Map extends Component {
     // code to run just after the component "mounts" / DOM elements are created
     // we could make an AJAX request for the GeoJSON data here if it wasn't stored locally
     this.getData();
+    setInterval( () => {
+      this.getData();
+    }, 5000);
     // create the Leaflet map object
     if (!this.state.map) this.init(this._mapNode);
   }
@@ -81,11 +84,11 @@ class Map extends Component {
   getData() {
     // could also be an AJAX request that results in setting state with the geojson data
     // for simplicity sake we are just importing the geojson data using webpack's json loader
-    setInterval(() => 
-    {
-      console.log("wut");
-    }, 5000);
-
+    console.log("updating");
+    this.setState({
+      geojson: null,
+      geojsonLayer: null
+    });
     axios.get('http://www.firefishy.com/tmp/bus/getdata.php')
     .then ((response) => {
       var map = response.data.Result.busPositions
@@ -95,7 +98,8 @@ class Map extends Component {
         "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },\
         "features": ['+ map.join(',') +']}'
       this.setState({
-        geojson: JSON.parse(gog)
+        geojson: JSON.parse(gog),
+        geojsonLayer: null
       });
     })
     .catch((error) => {
@@ -142,12 +146,12 @@ class Map extends Component {
 
   zoomToFeature(target) {
     // pad fitBounds() so features aren't hidden under the Filter UI element
-    var fitBoundsParams = {
-      paddingTopLeft: [200,10],
-      paddingBottomRight: [10,10]
-    };
-    // set the map's center & zoom so that it fits the geographic extent of the layer
-    this.state.map.fitBounds(target.getBounds(), fitBoundsParams);
+    // var fitBoundsParams = {
+    //   paddingTopLeft: [200,10],
+    //   paddingBottomRight: [10,10]
+    // };
+    // // set the map's center & zoom so that it fits the geographic extent of the layer
+    // this.state.map.fitBounds(target.getBounds(), fitBoundsParams);
   }
 
   filterFeatures(feature, layer) {
@@ -197,7 +201,7 @@ class Map extends Component {
 
       // assemble the HTML for the markers' popups (Leaflet's bindPopup method doesn't accept React JSX)
       const popupContent = `<h3>${feature.properties.NAME}</h3>
-        <strong>Access to MTA lines: </strong>${feature.properties.LINE}`;
+        <strong>Gautrain</strong>`;
 
       // add our popups
       layer.bindPopup(popupContent);

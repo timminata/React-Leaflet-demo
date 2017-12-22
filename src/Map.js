@@ -167,9 +167,6 @@ class Map extends Component {
   }
 
   updateMarkers(busPositions) {
-    this.state.map.eachLayer( (layer) => {
-      if (layer.id == 'foo') this.state.map.removeLayer(layer);
-    });
     L.Icon.Default.imagePath = '../node_modules/leaflet/dist/images/'
     var greenBus = L.icon({
       iconUrl: '../green-bus.png',  
@@ -179,6 +176,20 @@ class Map extends Component {
       // shadowAnchor: [0, 0],  // the same for the shadow
       // popupAnchor:  [10, 10] // point from which the popup should open relative to the iconAnchor
     });
+    var greyBus = L.icon({
+      iconUrl: '../grey-bus.png',  
+      iconSize:     [10, 10], // size of the icon
+      // shadowSize:   [0, 0], // size of the shadow
+      iconAnchor:   [5, 5], // point of the icon which will correspond to marker's location
+      // shadowAnchor: [0, 0],  // the same for the shadow
+      // popupAnchor:  [10, 10] // point from which the popup should open relative to the iconAnchor
+    });
+    this.state.map.eachLayer( (layer) => {
+      if (layer.id == 'foo')
+      {
+        layer.setIcon(greyBus);
+      }
+    });    
     busPositions.forEach(x => 
     {
       var marker = L.marker([x.latitude, x.longitude], {icon: greenBus});

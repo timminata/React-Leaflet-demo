@@ -85,16 +85,15 @@ class Map extends Component {
     {
       console.log("wut");
     }, 5000);
-    
+
     axios.get('http://www.firefishy.com/tmp/bus/getdata.php')
     .then ((response) => {
       var map = response.data.Result.busPositions
-      .map(x => '{ "type": "Feature", "properties": { "NAME": "Smith St & Bergen St At Ne Corner (To Manhattan And Queens Only)", "URL": "http:\/\/www.mta.info\/nyct\/service\/", "LINE": "F-G" }, "geometry": { "type": "Point", "coordinates": [ ' + x.longitude + ', ' + x.latitude + ' ] } }');
+      .map(x => '{ "type": "Feature", "properties": { "NAME": "' + x.busId +'", "URL": "http:\/\/www.mta.info\/nyct\/service\/", "LINE": "F-G" }, "geometry": { "type": "Point", "coordinates": [ ' + x.longitude + ', ' + x.latitude + ' ] } }');
       var gog = '{\
         "type": "FeatureCollection",\
         "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },\
         "features": ['+ map.join(',') +']}'
-      console.log(gog);
       this.setState({
         geojson: JSON.parse(gog)
       });

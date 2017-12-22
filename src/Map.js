@@ -86,22 +86,8 @@ class Map extends Component {
   getTapiData() {
     var agencyId = 'edObkk6o-0WN3tNZBLqKPg';
     var identityServerUrl = 'https://identity.whereismytransport.com';
-    var authOptions = {
-      method: 'POST',
-      url: identityServerUrl+'/connect/token',
-      data: {
-        client_id: 'transitapipostman_transitapi',
-        client_secret: 'wimt85!',
-        grant_type: 'client_credentials',
-        scope: 'transitapi:all'
-      },
-      headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-      },
-      json: true
-    };
-    //axios(authOptions)
+    var transitApiUrl = 'https://platform.whereismytransport.com/api';
+    
     axios.post(identityServerUrl+'/connect/token', qs.stringify({
       client_id: 'transitapipostman_transitapi',
       client_secret: 'wimt85!',
@@ -110,6 +96,13 @@ class Map extends Component {
     }))
     .then((response) => 
     {
+      var bearerToken = 'Bearer ' + response.data.access_token;
+      axios.get(transitApiUrl+'/stops?agencies='+agencyId, {headers: {Authorization: bearerToken}})
+      .then((tapiResponse) =>
+      {
+        console.log(tapiResponse);
+      });
+
       console.log(response);
     });
   }

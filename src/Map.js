@@ -178,9 +178,9 @@ class Map extends Component {
     });
     var greyBus = L.icon({
       iconUrl: '../grey-bus.png',  
-      iconSize:     [10, 10], // size of the icon
+      iconSize:     [16, 16], // size of the icon
       // shadowSize:   [0, 0], // size of the shadow
-      iconAnchor:   [5, 5], // point of the icon which will correspond to marker's location
+      iconAnchor:   [8, 8], // point of the icon which will correspond to marker's location
       // shadowAnchor: [0, 0],  // the same for the shadow
       // popupAnchor:  [10, 10] // point from which the popup should open relative to the iconAnchor
     });

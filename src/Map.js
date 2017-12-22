@@ -7,6 +7,7 @@ import geojson from 'json!./bk_subway_entrances.geojson';
 // import local components Filter and ForkMe
 import Filter from './Filter';
 import axios from 'axios';
+import qs from 'qs';
 
 // store the map configuration properties in an object,
 // we could also move this to a separate file & import it if desired.
@@ -58,6 +59,7 @@ class Map extends Component {
   componentDidMount() {
     // code to run just after the component "mounts" / DOM elements are created
     // we could make an AJAX request for the GeoJSON data here if it wasn't stored locally
+    this.getTapiData();
     this.getData();
     setInterval( () => {
       this.getData();
@@ -79,6 +81,37 @@ class Map extends Component {
     // code to run just before unmounting the component
     // this destroys the Leaflet map object & related event listeners
     this.state.map.remove();
+  }
+
+  getTapiData() {
+    var agencyId = 'edObkk6o-0WN3tNZBLqKPg';
+    var identityServerUrl = 'https://identity.whereismytransport.com';
+    var authOptions = {
+      method: 'POST',
+      url: identityServerUrl+'/connect/token',
+      data: {
+        client_id: 'transitapipostman_transitapi',
+        client_secret: 'wimt85!',
+        grant_type: 'client_credentials',
+        scope: 'transitapi:all'
+      },
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      },
+      json: true
+    };
+    //axios(authOptions)
+    axios.post(identityServerUrl+'/connect/token', qs.stringify({
+      client_id: 'transitapipostman_transitapi',
+      client_secret: 'wimt85!',
+      grant_type: 'client_credentials',
+      scope: 'transitapi:all'
+    }))
+    .then((response) => 
+    {
+      console.log(response);
+    });
   }
 
   getData() {

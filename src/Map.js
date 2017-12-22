@@ -6,13 +6,13 @@ import 'leaflet/dist/leaflet.css';
 import geojson from 'json!./bk_subway_entrances.geojson';
 // import local components Filter and ForkMe
 import Filter from './Filter';
-import ForkMe from './ForkMe';
+import axios from 'axios';
 
 // store the map configuration properties in an object,
 // we could also move this to a separate file & import it if desired.
 let config = {};
 config.params = {
-  center: [40.655769,-73.938503],
+  center: [-26.104760, 28.120362],
   zoomControl: false,
   zoom: 13,
   maxZoom: 19,
@@ -70,12 +70,6 @@ class Map extends Component {
       // add the geojson overlay
       this.addGeoJSONLayer(this.state.geojson);
     }
-
-    // check to see if the subway lines filter has changed
-    if (this.state.subwayLinesFilter !== prevState.subwayLinesFilter) {
-      // filter / re-render the geojson overlay
-      this.filterGeoJSONLayer();
-    }
   }
 
   componentWillUnmount() {
@@ -89,10 +83,15 @@ class Map extends Component {
     // for simplicity sake we are just importing the geojson data using webpack's json loader
     axios.get('http://www.firefishy.com/tmp/bus/getdata.php')
     .then ((response) => {
-      console.log(response);
+      var map = response.data.Result.busPositions
+      .map(x => '{ "type": "Feature", "properties": { "NAME": "Smith St & Bergen St At Ne Corner (To Manhattan And Queens Only)", "URL": "http:\/\/www.mta.info\/nyct\/service\/", "LINE": "F-G" }, "geometry": { "type": "Point", "coordinates": [ ' + x.longitude + ', ' + x.latitude + ' ] } }');
+      var gog = '{\
+        "type": "FeatureCollection",\
+        "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },\
+        "features": ['+ map.join(',') +']}'
+      console.log(gog);
       this.setState({
-        numEntrances: geojson.features.length,
-        geojson
+        geojson: JSON.parse(gog)
       });
     })
     .catch((error) => {
@@ -221,14 +220,9 @@ class Map extends Component {
     return (
       <div id="mapUI">
         {
-          /* render the Filter component only after the subwayLines array has been created */
-          subwayLineNames.length &&
-            <Filter lines={subwayLineNames}
-              curFilter={subwayLinesFilter}
-              filterLines={this.updateMap} />
+          
         }
         <div ref={(node) => this._mapNode = node} id="map" />
-        <ForkMe />
       </div>
     );
   }

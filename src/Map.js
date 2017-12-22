@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import L from 'leaflet';
+import L, { geoJSON } from 'leaflet';
 // postCSS import of Leaflet's CSS
 import 'leaflet/dist/leaflet.css';
 // using webpack json loader we can import our geojson file like this
@@ -110,6 +110,20 @@ class Map extends Component {
           geojsonLayer: null
         });
       });
+
+      axios.get(transitApiUrl+'/lines?agencies='+agencyId, {headers: {Authorization: bearerToken}})
+      .then((tapiLineResponse) =>
+      {
+        tapiLineResponse.data.forEach((line) =>
+        {
+          axios.get(transitApiUrl+'/lines/'+line.id+'/geometry', {headers: {Authorization: bearerToken}})
+          .then((tapiLineShapeResponse) =>
+          {
+            console.log(tapiLineShapeResponse);
+            this.addGeoJSONLayer(tapiLineShapeResponse.data);
+          });
+        });
+      });
     });
   }
 
@@ -179,11 +193,7 @@ class Map extends Component {
     // an options object is passed to define functions for customizing the layer
     
 
-    const geojsonLayer = L.geoJson(geojson, {
-      onEachFeature: this.onEachFeature,
-      pointToLayer: this.pointToLayer,
-      filter: this.filterFeatures
-    });    
+    const geojsonLayer = L.geoJson(geojson);    
     // add our GeoJSON layer to the Leaflet map object
     geojsonLayer.addTo(this.state.map);
     // store the Leaflet GeoJSON layer in our component state for use later

@@ -121,11 +121,9 @@ class Map extends Component {
   }
 
   updateMarkers(busPositions) {
-    // this.state.map.eachLayer( (layer) => {
-    //   this.state.map.removeLayer(layer);
-    // });
-    var markerGroup = L.layerGroup().addTo(this.state.map);
-    
+    this.state.map.eachLayer( (layer) => {
+      if (layer instanceof L.Marker) this.state.map.removeLayer(layer);
+    });
     L.Icon.Default.imagePath = '../node_modules/leaflet/dist/images/'
     var greenBus = L.icon({
       iconUrl: '../green-bus.png',  
@@ -139,7 +137,8 @@ class Map extends Component {
     {
       var marker = L.marker([x.latitude, x.longitude], {icon: greenBus});
       marker.bindPopup(x.busId);
-      marker.addTo(markerGroup);
+      //marker.id = 'foo';
+      marker.addTo(this.state.map);
     });    
   }
 

@@ -105,10 +105,11 @@ class Map extends Component {
           "type": "FeatureCollection",\
           "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },\
           "features": ['+ map.join(',') +']}'
-        this.setState({
+        /*this.setState({
           geojson: JSON.parse(gog),
           geojsonLayer: null
-        });
+        });*/
+        this.addStopMarkers(tapiResponse.data);
       });
 
       axios.get(transitApiUrl+'/lines?agencies='+agencyId, {headers: {Authorization: bearerToken}})
@@ -166,6 +167,16 @@ class Map extends Component {
     });
   }
 
+  addStopMarkers(tapiStopPositions) {
+    L.Icon.Default.imagePath = '../node_modules/leaflet/dist/images/';
+    tapiStopPositions.forEach((stop) =>
+    {
+      var marker = L.marker([stop.geometry.coordinates[1], stop.geometry.coordinates[0]]);
+      marker.bindPopup('Stop Name: ' + stop.name);
+      marker.addTo(this.state.map);
+    });
+  }
+
   updateMarkers(busPositions) {
     L.Icon.Default.imagePath = '../node_modules/leaflet/dist/images/'
     var greenBus = L.icon({
@@ -193,7 +204,12 @@ class Map extends Component {
     busPositions.forEach(x => 
     {
       var marker = L.marker([x.latitude, x.longitude], {icon: greenBus});
-      marker.bindPopup(x.busId);
+      const popupContent = `<h3>Bus ID: ${x.busId}</h3>
+                            <strong>Latitude: ${x.latitude}</strong><br/>
+                            <strong>Longitude: ${x.longitude}</strong><br/>
+                            <strong>${x.formattedLastModified}</strong><br/>`;
+      //marker.bindPopup('Gaubus ID: ' + x.busId + '\n Lat: ' + x.latitude + '\n Lon: ' + x.longitude + '\n Updated: '+x.formattedLastModified);
+      marker.bindPopup(popupContent);
       marker.id = 'foo';
       marker.addTo(this.state.map);
     });    
